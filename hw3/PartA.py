@@ -9,9 +9,6 @@ import sys
 occupancy_map_img = Image.open('occupancy_map.png')
 M = (np.asarray(occupancy_map_img) > 0).astype(int)
 
-# print(M[350][400])
-# print(M[635][140])
-
 
 def RecoverPath(start, goal, pred):
     path = RecoverPathHelper(start, goal, [], pred)
@@ -23,31 +20,6 @@ def RecoverPathHelper(start, goal, path, pred):
         return [(start[0], start[1])]
     else:
         return RecoverPathHelper(start, pred[''.join(map(str, goal))], path, pred) + [(goal[0], goal[1])]
-
-
-# # binary map
-# M = [[1, 1, 0, 0, 0, 0, 0, 0, 0],
-#      [0, 0, 1, 0, 0, 0, 0, 0, 0],
-#      [0, 0, 0, 1, 0, 0, 0, 0, 0],
-#      [0, 0, 0, 0, 1, 0, 0, 0, 0],
-#      [0, 0, 0, 0, 1, 0, 0, 0, 0],
-#      [0, 0, 0, 0, 1, 0, 0, 0, 0],
-#      [0, 0, 0, 0, 0, 1, 0, 0, 0],
-#      [0, 0, 0, 0, 0, 1, 0, 0, 0],
-#      [0, 0, 0, 0, 0, 0, 1, 0, 0],
-#      [0, 0, 0, 0, 0, 0, 0, 1, 0],
-#      [0, 0, 0, 0, 0, 0, 0, 1, 0],
-#      [0, 0, 0, 0, 0, 0, 0, 1, 0],
-#      [0, 0, 0, 0, 0, 0, 0, 0, 1], ]
-
-
-# M = [[1, 1, 0, 0, 0, 1, 0, 0, 0],
-#      [0, 0, 1, 0, 1, 0, 1, 0, 0],
-#      [0, 0, 0, 1, 0, 0, 0, 1, 1], ]
-
-# M = [[1, 1, 1],
-#      [1, 1, 1],
-#      [1, 1, 1]]
 
 
 def unoccupiedNeighbors(v):
@@ -99,17 +71,6 @@ def heuristic(v1, v2):
     return (((v1[0] - v2[0]) * (v1[0] - v2[0])) + ((v1[1] - v2[1]) * (v1[1] - v2[1])))**0.5
 
 
-# print(h([635, 140], [350, 400]))
-
-# print(N([3, 3]))
-
-# def h(s,g):
-#     sqr(s.)
-
-
-# print(''.join(map(str, [0, 1])))
-
-
 def A_Star(V, start, goal, N, w, h):
     cost_to = {}
     est_total_cost = {}
@@ -152,33 +113,70 @@ def A_Star(V, start, goal, N, w, h):
 
     return []
 
+# start = [635, 140]
+# end = [350, 400]
 
-# vertexSet = [[0, 0], [0, 1], [0, 2], [0, 3],
-#              [1, 0], [1, 1], [1, 2], [1, 3],
-#              [2, 0], [2, 1], [2, 2], [2, 3],
-#              [3, 0], [3, 1], [3, 2], [3, 3]]
+# path = A_Star(vertexSet, start, end, unoccupiedNeighbors, distance, heuristic)
+
+# with Image.open('occupancy_map.png') as im:
+#     draw = ImageDraw.Draw(im)
+#     # draw.ellipse((635-50, 140-50, 635+50, 140+50),
+#     #              fill='red', outline='blue')
+#     # draw.line([(635, 140), (350, 400)], width=10, fill='red')
+#     draw.line(path, width=1, fill='red')
+
+#     im.show()
+
+
+################################################
+#                   TESTS
+################################################
+# # binary map
+M = [[1, 1, 0, 0, 0, 1],
+     [1, 1, 1, 0, 0, 1],
+     [1, 0, 1, 1, 0, 1],
+     [1, 0, 0, 1, 1, 1],
+     [1, 0, 0, 1, 0, 1],
+     [1, 0, 0, 0, 1, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 0, 0, 0, 0, 1],
+     [1, 1, 1, 1, 1, 1], ]
+
+
+# M = [[1, 1, 0, 0, 0, 1, 0, 0, 0],
+#      [0, 0, 1, 0, 1, 0, 1, 0, 0],
+#      [0, 0, 0, 1, 0, 0, 0, 1, 1], ]
+
+# M = [[1, 1, 1],
+#      [1, 1, 1],
+#      [1, 1, 1]]
 
 vertexSet = []
 for x in range(len(M)):
     for y in range(len(M[0])):
         vertexSet.append([x, y])
 
-start = [635, 140]
-end = [350, 400]
+start = [0, 0]
+end = [12, 5]
 
 path = A_Star(vertexSet, start, end, unoccupiedNeighbors, distance, heuristic)
-# print(path)
+print(path)
 
-with Image.open('occupancy_map.png') as im:
-    draw = ImageDraw.Draw(im)
-    # draw.ellipse((635-50, 140-50, 635+50, 140+50),
-    #              fill='red', outline='blue')
-    # draw.line([(635, 140), (350, 400)], width=10, fill='red')
-    draw.line(path, width=1, fill='red')
+# print(h([635, 140], [350, 400]))
 
-    im.show()
+# print(N([3, 3]))
 
-print("finished")
+# def h(s,g):
+#     sqr(s.)
+
+
+# print(''.join(map(str, [0, 1])))
+
+
 # pred1 = {
 #     "F": "E",
 #     "E": "D",
@@ -194,5 +192,7 @@ print("finished")
 #     "H": "G"
 # }
 
+
 # path = RecoverPath("K", "H", pred2)
 # print(path)
+print("finished")
