@@ -11,7 +11,7 @@ import networkx as nx
 
 occupancy_map_img = Image.open('occupancy_map.png')
 M = (np.asarray(occupancy_map_img) > 0).astype(int)
-print(M)
+# print(M)
 
 
 ###########################################
@@ -125,28 +125,38 @@ def euclideanDistance(v1, v2):
     return (((v1[0] - v2[0]) * (v1[0] - v2[0])) + ((v1[1] - v2[1]) * (v1[1] - v2[1])))**0.5
 
 
-start = [635, 140]
-end = [350, 400]
+# start = [635, 140]
+# end = [350, 400]
 
-vertexSet = []
+# vertexSet = []
 # for x in range(len(M)):
 #     for y in range(len(M[0])):
 #         vertexSet.append([x, y])
 
-# path = A_Star(vertexSet, start, end, unoccupiedNeighbors, distance, heuristic)
+# path = A_Star(vertexSet, start, end, unoccupiedNeighbors,
+#               distance, euclideanDistance)
+
+# inversePath = []
+
+# for point in path:
+#     inversePath.append((point[1], point[0]))
+
+# print(len(path))
 
 # with Image.open('occupancy_map.png') as im:
 #     draw = ImageDraw.Draw(im)
 #     # draw.ellipse((635-50, 140-50, 635+50, 140+50),
 #     #              fill='red', outline='blue')
 #     # draw.line([(635, 140), (350, 400)], width=10, fill='red')
-#     draw.line(path, width=1, fill='red')
+#     draw.line(inversePath, width=1, fill='red')
 
 #     im.show()
 
 ###########################################
 #               PART C
 ###########################################
+
+# c-i
 
 
 def getRandomSample(Map):
@@ -160,6 +170,8 @@ def getRandomSample(Map):
 
     return (randomX[0], randomY[0])
 
+# c-ii
+
 
 def reachableByStraightLine(Map, vertex1, vertex2):
     pointsToCheck = list(
@@ -171,22 +183,28 @@ def reachableByStraightLine(Map, vertex1, vertex2):
 
     return True
 
+# c-iii
+
 
 def addVertex(graph, newVertex, searchRadius, map):
     nextNodeNum = graph.number_of_nodes() + 1
-    graph.add_node(nextNodeNum, {'pos': (newVertex[0], newVertex[1])})
+    graph.add_node(nextNodeNum, pos=(newVertex[0], newVertex[1]))
 
-    for vertex in graph.nodes():
-        if (not (vertex.index == nextNodeNum)):
-            if (reachableByStraightLine(map, newVertex, vertex)):
-                distanceBetweenNodes = euclideanDistance(newVertex, vertex)
+    for vertex in graph.nodes(data=True):
+        if (not (vertex[0] == nextNodeNum)):
+
+            if (reachableByStraightLine(map, newVertex, vertex[1]['pos'])):
+                distanceBetweenNodes = euclideanDistance(
+                    newVertex, vertex[1]['pos'])
                 if (distanceBetweenNodes < searchRadius):
                     graph.add_edge(nextNodeNum, vertex.index,
                                    weight=distanceBetweenNodes)
 
+# c-iii
+
 
 def createPRM(numSamples, searchRadius, map):
-    graph = nx.graph()
+    graph = nx.Graph()
 
     for i in range(numSamples):
         newVertex = getRandomSample(map)
@@ -194,27 +212,31 @@ def createPRM(numSamples, searchRadius, map):
 
     return graph
 
-    ###########################################
-    #                   TESTS
-    ###########################################
-    # # binary map
-    # M = [[1, 1, 1, 1, 1, 0],
-    #      [1, 1, 1, 0, 0, 0],
-    #      [1, 0, 1, 1, 0, 1],
-    #      [1, 0, 0, 1, 0, 1],
-    #      [1, 0, 0, 1, 0, 1],
-    #      [1, 0, 1, 1, 1, 1],
-    #      [1, 0, 1, 1, 1, 1],
-    #      [1, 0, 1, 1, 1, 1],
-    #      [1, 0, 0, 0, 0, 1],
-    #      [1, 0, 0, 0, 0, 1],
-    #      [1, 0, 0, 0, 0, 1],
-    #      [1, 0, 0, 0, 0, 1],
-    #      [0, 1, 1, 1, 1, 1], ]
+
+# c-iv
+print(createPRM(2500, 75, M))
+
+###########################################
+#                   TESTS
+###########################################
+# # binary map
+# M = [[1, 1, 1, 1, 1, 0],
+#      [1, 1, 1, 0, 0, 0],
+#      [1, 0, 1, 1, 0, 1],
+#      [1, 0, 0, 1, 0, 1],
+#      [1, 0, 0, 1, 0, 1],
+#      [1, 0, 1, 1, 1, 1],
+#      [1, 0, 1, 1, 1, 1],
+#      [1, 0, 1, 1, 1, 1],
+#      [1, 0, 0, 0, 0, 1],
+#      [1, 0, 0, 0, 0, 1],
+#      [1, 0, 0, 0, 0, 1],
+#      [1, 0, 0, 0, 0, 1],
+#      [0, 1, 1, 1, 1, 1], ]
 
 
-sample = getRandomSample(M)
-print(sample)
+# sample = getRandomSample(M)
+# print(sample)
 # print(list(bresenham(0, 0, 2, 8)))
 
 
@@ -227,11 +249,12 @@ print(sample)
 #      [1, 1, 1]]
 
 
-start = [0, 0]
-end = [12, 5]
+# start = [0, 0]
+# end = [12, 5]
 
-path = A_Star(vertexSet, start, end, unoccupiedNeighbors, distance, heuristic)
-print(path)
+# path = A_Star(vertexSet, start, end, unoccupiedNeighbors,
+#               distance, euclideanDistance)
+# print(path)
 
 # print(h([635, 140], [350, 400]))
 
