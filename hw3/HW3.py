@@ -8,6 +8,9 @@ import sys
 import random
 from bresenham import bresenham
 import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import math
 
 occupancy_map_img = Image.open('occupancy_map.png')
 M = (np.asarray(occupancy_map_img) > 0).astype(int)
@@ -164,11 +167,11 @@ def getRandomSample(Map):
     ySize = len(Map[0])
     samplePointValue = 0
     while samplePointValue == 0:
-        randomX = random.sample(range(xSize), 1)
-        randomY = random.sample(range(ySize), 1)
-        samplePointValue = Map[randomX[0]][randomY[0]]
+        randomX = random.sample(range(xSize), 1)[0]
+        randomY = random.sample(range(ySize), 1)[0]
+        samplePointValue = Map[randomX][randomY]
 
-    return (randomX[0], randomY[0])
+    return (randomX, randomY)
 
 # c-ii
 
@@ -197,7 +200,9 @@ def addVertex(graph, newVertex, searchRadius, map):
                 distanceBetweenNodes = euclideanDistance(
                     newVertex, vertex[1]['pos'])
                 if (distanceBetweenNodes < searchRadius):
-                    graph.add_edge(nextNodeNum, vertex.index,
+                    node1 = nextNodeNum
+                    node2 = vertex[0]
+                    graph.add_edge(nextNodeNum, vertex[0],
                                    weight=distanceBetweenNodes)
 
 # c-iii
@@ -214,7 +219,19 @@ def createPRM(numSamples, searchRadius, map):
 
 
 # c-iv
-print(createPRM(2500, 75, M))
+
+PRM = createPRM(300, 75, M)
+nodes = PRM.nodes()
+nodeDictionary = {}
+for node in nodes:
+    pos = nodes[node]['pos']
+    nodeDictionary[node] = (pos[1], pos[0])
+    # nodeDictionary[node] = (pos[1], len(M)-pos[0])
+
+nx.draw_networkx(PRM, pos=nodeDictionary, node_size=10, with_labels=False)
+
+plt.imshow(occupancy_map_img)
+plt.show()
 
 ###########################################
 #                   TESTS
@@ -234,6 +251,65 @@ print(createPRM(2500, 75, M))
 #      [1, 0, 0, 0, 0, 1],
 #      [0, 1, 1, 1, 1, 1], ]
 
+# M = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]
+
+# PRM = createPRM(300, 75, M)
+
+# listOfSamples = []
+# PRM = nx.Graph()
+
+# for index in range(100):
+#     sample = getRandomSample(M)
+#     listOfSamples.append(sample)
+#     PRM.add_node(index, pos=sample)
+
+# plt.plot(listOfSamples)
+# plt.show()
+
+# plt.figure(1)
+# img = mpimg.imread('occupancy_map.png')
+# plt.imshow(img)
+
+
+# nodes = PRM.nodes()
+# dict = {}
+
+# img = Image.open('occupancy_map.png')
+# plt.imshow(img)
+
+# for node in nodes:
+#     pos = nodes[node]['pos']
+#     dict[node] = pos
+
+# dict[node] = (pos[1], len(M)-pos[0])
+
+# nx.draw_networkx(PRM, pos=dict, node_size=10, with_labels=False)
+
+# plt.show()
+
+# value = "jj"
 
 # sample = getRandomSample(M)
 # print(sample)
