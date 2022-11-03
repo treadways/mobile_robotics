@@ -14,7 +14,8 @@ import math
 
 occupancy_map_img = Image.open('occupancy_map.png')
 M = (np.asarray(occupancy_map_img) > 0).astype(int)
-# print(M)
+start = [635, 140]
+end = [350, 400]
 
 
 ###########################################
@@ -78,6 +79,8 @@ def A_Star(V, start, goal, N, w, h):
 #               PART B
 ###########################################
 
+# b-i
+
 
 def unoccupiedNeighbors(v):
     unoccupiedNeighbors = []
@@ -116,6 +119,8 @@ def unoccupiedNeighbors(v):
 
     return unoccupiedNeighbors
 
+# b-ii
+
 
 def distance(v1, v2):
     if (v1[0] == v2[0] or v1[1] == v2[1]):
@@ -123,37 +128,43 @@ def distance(v1, v2):
     else:
         return 2**0.5
 
+# heuristic
+
 
 def euclideanDistance(v1, v2):
     return (((v1[0] - v2[0]) * (v1[0] - v2[0])) + ((v1[1] - v2[1]) * (v1[1] - v2[1])))**0.5
 
+# helper
 
-# start = [635, 140]
-# end = [350, 400]
 
-# vertexSet = []
-# for x in range(len(M)):
-#     for y in range(len(M[0])):
-#         vertexSet.append([x, y])
+def findTotalDistance(listOfPoints):
+    prevNode = listOfPoints.pop(0)
+    totalDistance = 0
+    for point in listOfPoints:
+        totalDistance = totalDistance + euclideanDistance(start, point)
+        prevNode = point
 
-# path = A_Star(vertexSet, start, end, unoccupiedNeighbors,
-#               distance, euclideanDistance)
 
-# inversePath = []
+vertexSet = []
+for x in range(len(M)):
+    for y in range(len(M[0])):
+        vertexSet.append([x, y])
 
-# for point in path:
-#     inversePath.append((point[1], point[0]))
+path = A_Star(vertexSet, start, end, unoccupiedNeighbors,
+              distance, euclideanDistance)
 
-# print(len(path))
+inversePath = []
 
-# with Image.open('occupancy_map.png') as im:
-#     draw = ImageDraw.Draw(im)
-#     # draw.ellipse((635-50, 140-50, 635+50, 140+50),
-#     #              fill='red', outline='blue')
-#     # draw.line([(635, 140), (350, 400)], width=10, fill='red')
-#     draw.line(inversePath, width=1, fill='red')
+for point in path:
+    inversePath.append((point[1], point[0]))
 
-#     im.show()
+# print(findTotalDistance(inversePath))
+
+with Image.open('occupancy_map.png') as im:
+    draw = ImageDraw.Draw(im)
+    draw.line(inversePath, width=1, fill='red')
+
+    im.show()
 
 ###########################################
 #               PART C
@@ -228,10 +239,27 @@ for node in nodes:
     nodeDictionary[node] = (pos[1], pos[0])
     # nodeDictionary[node] = (pos[1], len(M)-pos[0])
 
-nx.draw_networkx(PRM, pos=nodeDictionary, node_size=10, with_labels=False)
+# nx.draw_networkx(PRM, pos=nodeDictionary, node_size=10, with_labels=False)
 
-plt.imshow(occupancy_map_img)
-plt.show()
+# plt.imshow(occupancy_map_img)
+# plt.show()
+
+# c-v
+addVertex(PRM, start, 75, M)
+addVertex(PRM, end, 75, M)
+prmPath = nx.astar_path(PRM, 301, 302, heuristic=None, weight='weight')
+
+inversePrmPath = []
+
+for point in prmPath:
+    pointPos = nodes[point]['pos']
+    inversePrmPath.append((pointPos[1], pointPos[0]))
+
+with Image.open('occupancy_map.png') as im:
+    draw = ImageDraw.Draw(im)
+    draw.line(inversePrmPath, width=1, fill='red')
+
+    im.show()
 
 ###########################################
 #                   TESTS
