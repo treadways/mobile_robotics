@@ -141,8 +141,10 @@ def findTotalDistance(listOfPoints):
     prevNode = listOfPoints.pop(0)
     totalDistance = 0
     for point in listOfPoints:
-        totalDistance = totalDistance + euclideanDistance(start, point)
+        totalDistance = totalDistance + euclideanDistance(prevNode, point)
         prevNode = point
+
+    return
 
 
 vertexSet = []
@@ -158,7 +160,7 @@ inversePath = []
 for point in path:
     inversePath.append((point[1], point[0]))
 
-# print(findTotalDistance(inversePath))
+print(findTotalDistance(inversePath))
 
 with Image.open('occupancy_map.png') as im:
     draw = ImageDraw.Draw(im)
